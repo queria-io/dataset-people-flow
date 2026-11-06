@@ -1,0 +1,61 @@
+version: 2
+
+models:
+- name: mesh_population
+  description: 1km メッシュ別の滞在人口。1 行が 1 メッシュ・1 か月・平休日・時間帯の 1 組。
+  access: public
+  columns:
+  - name: mesh_code
+    data_tests:
+    - not_null
+    - relationships:
+        arguments:
+          to: ref('mesh')
+          field: mesh_code
+  - name: date
+    data_tests: [not_null]
+  - name: day_type
+    data_tests: [not_null]
+  - name: time_of_day
+    data_tests: [not_null]
+  - name: population
+    data_tests: [not_null]
+  - name: city_code
+    data_tests:
+    - not_null
+    - relationships:
+        arguments:
+          to: ref('city')
+          field: city_code
+- name: city_population_by_origin
+  description: 市区町村単位発地別の滞在人口。1 行が 1 市区町村・1 か月・平休日・時間帯・居住地区分の 1 組。
+  access: public
+  columns:
+  - name: city_code
+    data_tests: [not_null]
+  - name: date
+    data_tests: [not_null]
+  - name: day_type
+    data_tests: [not_null]
+  - name: time_of_day
+    data_tests: [not_null]
+  - name: origin
+    data_tests: [not_null]
+  - name: population
+    data_tests: [not_null]
+- name: mesh
+  description: 1km メッシュの形と所属。1 行が 1 メッシュ。
+  access: public
+  columns:
+  - name: mesh_code
+    data_tests: [unique, not_null]
+  - name: geometry
+    data_tests: [not_null]
+- name: city
+  description: 都道府県・市区町村と地方区分。1 行が 1 市区町村。
+  access: public
+  columns:
+  - name: city_code
+    data_tests: [unique, not_null]
+  - name: region
+    data_tests: [not_null]

@@ -1,0 +1,52 @@
+schema: stay
+name: mesh_population
+title: 1km メッシュ別の滞在人口（月別）
+description: |-
+  1km メッシュ（3 次メッシュ）ごとの滞在人口です。1 行が 1 メッシュ・1 か月・平休日・時間帯の 1 組で、2019 年 1 月〜2021 年 12 月を収録しています。
+
+  - 滞在人口は、その月の 1 日あたりの平均です。月をまたいで合計しません
+  - 10 人未満のメッシュは行がありません
+  - 全日・終日の行は内訳の合計ではありません。平日と休日、昼と深夜を足さずに、全日・終日の行を使います
+primary_key: [mesh_code, date, day_type, time_of_day]
+sources:
+  - path: https://www.geospatial.jp/ckan/dataset/mlit-1km-fromto
+fields:
+  - name: mesh_code
+    title: 3 次メッシュコード
+    description: 8 桁（JIS X 0410）。stay.mesh に形があります
+    annotations: { queria: { semantic: { role: entity, name: mesh } } }
+  - name: date
+    title: 年月
+    description: その月の 1 日
+  - name: year
+    title: 年
+  - name: month
+    title: 月
+  - name: day_type
+    title: 平休日
+    description: 平日・休日（土曜・日曜・祝日）・全日。原典の dayflag 1・0・2
+    annotations: { queria: { semantic: { role: dimension } } }
+  - name: time_of_day
+    title: 時間帯
+    description: 昼（11〜14 時台の平均）・深夜（1〜4 時台の平均）・終日（0〜23 時台の平均）。原典の timezone 0・1・2
+    annotations: { queria: { semantic: { role: dimension } } }
+  - name: population
+    title: 滞在人口
+    description: 人。1 か月の 1 日あたりの平均。10 以上
+    annotations: { queria: { semantic: { role: measure, agg: sum } } }
+  - name: prefecture_code
+    title: 都道府県コード
+    description: 2 桁
+    annotations: { queria: { semantic: { role: entity, name: prefecture } } }
+  - name: city_code
+    title: 市区町村コード（5 桁）
+    description: メッシュが属する市区町村（政令指定都市は区）。2019 年の那珂川市は旧那珂川町の 40305
+    annotations: { queria: { semantic: { role: entity, name: city } } }
+  - name: lg_code
+    title: 全国地方公共団体コード
+    description: city_code に検査数字を付けた 6 桁
+    annotations: { queria: { semantic: { role: entity, name: city } } }
+  - name: lng
+    title: メッシュの中心の経度
+  - name: lat
+    title: メッシュの中心の緯度

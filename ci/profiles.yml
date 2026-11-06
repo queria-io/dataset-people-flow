@@ -1,0 +1,11 @@
+# PR のビルド確認用。公開ストレージには書かず、手元の DuckDB ファイルに作る
+people_flow:
+  target: ci
+  outputs:
+    ci:
+      type: duckdb
+      path: target/people_flow.duckdb
+      schema: main
+      threads: 1
+      extensions:
+        - spatial

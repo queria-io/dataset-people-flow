@@ -1,0 +1,35 @@
+schema: stay
+name: mesh
+title: 1km メッシュ
+description: |-
+  滞在人口の集計に使う 1km メッシュ（3 次メッシュ）の形と、属する都道府県・市区町村です。1 行が 1 メッシュです。
+
+  - 形と中心はメッシュコードから計算しています
+  - 属する市区町村は 2020 年版の 1km メッシュ属性によります
+primary_key: [mesh_code]
+sources:
+  - path: https://www.geospatial.jp/ckan/dataset/mlit-1km-fromto
+fields:
+  - name: mesh_code
+    title: 3 次メッシュコード
+    description: 8 桁（JIS X 0410）
+    annotations: { queria: { semantic: { role: entity, name: mesh } } }
+  - name: prefecture_code
+    title: 都道府県コード
+    description: 2 桁
+    annotations: { queria: { semantic: { role: entity, name: prefecture } } }
+  - name: city_code
+    title: 市区町村コード（5 桁）
+    description: 政令指定都市は区
+    annotations: { queria: { semantic: { role: entity, name: city } } }
+  - name: lg_code
+    title: 全国地方公共団体コード
+    description: city_code に検査数字を付けた 6 桁
+    annotations: { queria: { semantic: { role: entity, name: city } } }
+  - name: lng
+    title: 中心の経度
+  - name: lat
+    title: 中心の緯度
+  - name: geometry
+    title: メッシュの形
+    description: ポリゴン（経緯度）

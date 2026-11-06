@@ -1,0 +1,63 @@
+# この dataset.yml は fdl commit が読む（FDL の dataset.json を YAML で書いたもの）。
+# 表の説明は models/ の *.table.yml に書く。表と列の型・NULL・行数は fdl commit がカタログから埋める。
+# Queria だけの項目（テーマ・カバー・列の意味）は annotations.queria に書く。
+name: people_flow
+title: 全国の人流オープンデータ（国土交通省）
+description: |-
+  2019〜2021 年の月ごとの滞在人口です。全国の 1km メッシュ別と、市区町村別に滞在者の居住地で分けたものがあり、平日・休日と昼・深夜で分かれています。スマートフォンの位置情報から Agoop が推計した値です。
+
+  出典：「全国の人流オープンデータ」（国土交通省）（https://www.geospatial.jp/ckan/dataset/mlit-1km-fromto）を加工して作成。
+keywords:
+  - 人流
+  - 滞在人口
+  - 人出
+  - 位置情報
+  - 1km メッシュ
+  - 新型コロナウイルス
+  - Agoop
+homepage: https://github.com/queria-io/dataset-people-flow
+language: ja
+
+licenses:
+  - id: JP-MLIT-PEOPLE-FLOW
+    url: https://www.geospatial.jp/ckan/dataset/mlit-1km-fromto/resource/5a3705d7-b321-4f33-b0d9-0c4c379e96c3
+    title: 全国の人流オープンデータ利用規約（国土交通省、政府標準利用規約 2.0 準拠・CC BY 4.0 互換）
+    commercial_use: true
+    share_alike: false
+    attribution_required: true
+
+sources:
+  - title: 全国の人流オープンデータ（1km メッシュ、市区町村単位発地別）（G空間情報センター）
+    path: https://www.geospatial.jp/ckan/dataset/mlit-1km-fromto
+  - title: オープンデータ（人流データ）定義書（国土交通省）
+    path: https://www.geospatial.jp/ckan/dataset/mlit-1km-fromto/resource/e2083495-8095-4119-a865-e5c22e6a7eee
+
+contributors:
+  - title: 国土交通省 不動産・建設経済局 情報活用推進課
+    path: https://www.mlit.go.jp/
+    roles: [rightsHolder]
+
+spatial_coverage: [JP]
+temporal_coverage: { start: "2019-01", end: "2021-12" }
+update_frequency: irregular
+
+schemas:
+  - name: stay
+    title: 滞在人口
+
+annotations:
+  queria:
+    themes: [population, transport_tourism]
+    cover: 🚶
+    ai_context:
+      instructions: |
+        月ごとの人出の変化（新型コロナの前後、平日と休日、昼と深夜）を見るのに使う。2019 年 1 月〜2021 年 12 月で、これ以降は無い。
+        mesh_population は 1km メッシュ別、city_population_by_origin は市区町村別で、滞在者の居住地（同一市区町村・同一都道府県・同一地方・他の地方）で分かれる。
+        値は 1 か月の 1 日あたりの平均の人数。月をまたいで合計しない。day_type と time_of_day は必ず 1 つに絞る（全日・終日の行は内訳の合計ではない）。
+        10 人未満の行は無いので、山間部のメッシュは欠ける。
+        mesh_code は e-Stat などのメッシュ統計と同じ 3 次メッシュコードで、国勢調査の人口と結合できる。地図は mesh_population の lng・lat か、mesh の geometry を使う。
+      synonyms: [人流データ, 滞在人口, 人出, 混雑, 来訪者, 流入人口]
+      examples:
+        - 緊急事態宣言の前後で都心の人出がどれだけ減ったか知りたい
+        - 観光地に県外から来る人が月ごとにどう変わるか知りたい
+        - 昼と深夜の滞在人口の差が大きいメッシュを地図にしたい

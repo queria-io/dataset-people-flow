@@ -1,0 +1,28 @@
+name: "people_flow"
+version: "1.0.0"
+
+profile: "people_flow"
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros", "shared/macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  people_flow:
+    +database: people_flow
+    stay:
+      +materialized: table
+      # mesh_population（3,800 万行）は年月 → メッシュコードの順に並べ、行グループを 245,760 行（約 0.85MB）にする。
+      # 1 か月の全国（約 100 万行）が 4〜5 個の行グループに、ある地域の 36 か月が月ごとに 1〜2 個の行グループに収まる。
+      # 設定はスキーマに付く (dbt は __dbt_tmp に書いてから改名するので、テーブルに付けても効かない)
+      # PR のビルド確認（ci/profiles.yml、target ci）は DuckLake でないので付けない
+      +pre-hook:
+        - "{{ \"CALL people_flow.set_option('parquet_row_group_size', 245760, schema => 'stay')\" if target.name != 'ci' else '' }}"
+        - "{{ \"CALL people_flow.set_option('parquet_compression', 'zstd', schema => 'stay')\" if target.name != 'ci' else '' }}"

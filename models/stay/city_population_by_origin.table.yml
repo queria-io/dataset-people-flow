@@ -1,0 +1,47 @@
+schema: stay
+name: city_population_by_origin
+title: 市区町村単位発地別の滞在人口（月別）
+description: |-
+  市区町村ごとの滞在人口を、滞在者の居住地で 4 つに分けたものです。1 行が 1 市区町村・1 か月・平休日・時間帯・居住地区分の 1 組で、2019 年 1 月〜2021 年 12 月を収録しています。
+
+  - 居住地区分は、同一市区町村・同一都道府県（ほかの市区町村）・同一地方（ほかの都道府県）・他の地方の 4 つです
+  - 滞在人口は、その月の 1 日あたりの平均です。10 人未満の組は行がありません
+primary_key: [city_code, date, day_type, time_of_day, origin]
+sources:
+  - path: https://www.geospatial.jp/ckan/dataset/mlit-1km-fromto
+fields:
+  - name: prefecture_code
+    title: 滞在先の都道府県コード
+    description: 2 桁
+    annotations: { queria: { semantic: { role: entity, name: prefecture } } }
+  - name: city_code
+    title: 滞在先の市区町村コード（5 桁）
+    description: 政令指定都市は区。2019 年の那珂川市は旧那珂川町の 40305
+    annotations: { queria: { semantic: { role: entity, name: city } } }
+  - name: lg_code
+    title: 滞在先の全国地方公共団体コード
+    description: city_code に検査数字を付けた 6 桁
+    annotations: { queria: { semantic: { role: entity, name: city } } }
+  - name: date
+    title: 年月
+    description: その月の 1 日
+  - name: year
+    title: 年
+  - name: month
+    title: 月
+  - name: day_type
+    title: 平休日
+    description: 平日・休日（土曜・日曜・祝日）・全日
+    annotations: { queria: { semantic: { role: dimension } } }
+  - name: time_of_day
+    title: 時間帯
+    description: 昼（11〜14 時台の平均）・深夜（1〜4 時台の平均）・終日（0〜23 時台の平均）
+    annotations: { queria: { semantic: { role: dimension } } }
+  - name: origin
+    title: 居住地区分
+    description: 同一市区町村・同一都道府県・同一地方・他の地方。地方は stay.city の region。原典の from_area 0〜3
+    annotations: { queria: { semantic: { role: dimension } } }
+  - name: population
+    title: 滞在人口
+    description: 人。1 か月の 1 日あたりの平均。10 以上
+    annotations: { queria: { semantic: { role: measure, agg: sum } } }
