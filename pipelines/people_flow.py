@@ -25,8 +25,10 @@ import logging
 import os
 import re
 import tempfile
+import time
 import zipfile
 from pathlib import Path
+from urllib.error import HTTPError
 
 import duckdb
 
@@ -63,11 +65,27 @@ def selected(prefecture: str) -> bool:
     return not wanted or prefecture in wanted.split(",")
 
 
+# G空間情報センターは続けて取ると 403 を返すことがある（数十件取ったところで出る）。
+# 1 件ごとに間を空け、403 は待ってから取り直す
+PAUSE = 2
+FORBIDDEN_WAITS = (30, 60, 120, 240)
+
+
 def fetch_zip(url: str) -> Path:
     path = RAW / url.rsplit("/", 1)[1]
-    if not path.exists():
-        RAW.mkdir(parents=True, exist_ok=True)
-        download(url, path, user_agent=USER_AGENT, timeout=300)
+    if path.exists():
+        return path
+    RAW.mkdir(parents=True, exist_ok=True)
+    for wait in (*FORBIDDEN_WAITS, None):
+        time.sleep(PAUSE)
+        try:
+            download(url, path, user_agent=USER_AGENT, timeout=300)
+            return path
+        except HTTPError as e:
+            if e.code != 403 or wait is None:
+                raise
+            logger.info(f"  {path.name}: 403。{wait} 秒待って取り直す")
+            time.sleep(wait)
     return path
 
 
