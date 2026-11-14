@@ -4,6 +4,8 @@
 name: people_flow
 title: 全国の人流オープンデータ（国土交通省）
 description: |-
+  このデータセットは更新を終えました。同じテーブルを geospatial.people_flow（https://queria.io/datasets/queria/geospatial）で提供しています。テーブル名は people_flow.stay.<テーブル> から geospatial.people_flow.<テーブル> に変わります。
+
   2019〜2021 年の月ごとの滞在人口です。全国の 1km メッシュ別と、市区町村別に滞在者の居住地で分けたものがあり、平日・休日と昼・深夜で分かれています。スマートフォンの位置情報から Agoop が推計した値です。
 
   出典：「全国の人流オープンデータ」（国土交通省）（https://www.geospatial.jp/ckan/dataset/mlit-1km-fromto）を加工して作成。
